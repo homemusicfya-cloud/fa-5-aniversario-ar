@@ -1,0 +1,110 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #000;
+    color: #fff;
+}
+
+.contenedor {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 25px;
+}
+
+.tarjeta {
+    width: 100%;
+    max-width: 420px;
+
+    text-align: center;
+
+    padding: 45px 25px;
+}
+
+.numero {
+    font-size: 110px;
+    font-weight: 200;
+    line-height: 1;
+
+    letter-spacing: 5px;
+}
+
+h1 {
+    margin-top: 15px;
+
+    font-size: 25px;
+    font-weight: 300;
+
+    letter-spacing: 8px;
+}
+
+.linea {
+    width: 80px;
+    height: 1px;
+
+    background: #fff;
+
+    margin: 25px auto;
+}
+
+h2 {
+    font-size: 42px;
+    font-weight: 300;
+
+    letter-spacing: 10px;
+}
+
+.descripcion {
+    margin-top: 20px;
+
+    font-size: 14px;
+
+    color: #bdbdbd;
+
+    letter-spacing: 1px;
+}
+
+.boton {
+    margin-top: 35px;
+
+    width: 100%;
+    max-width: 280px;
+
+    padding: 15px 20px;
+
+    border: 1px solid #fff;
+    border-radius: 30px;
+
+    background: transparent;
+
+    color: #fff;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.boton:hover {
+    background: #fff;
+    color: #000;
+}
+
+.boton:active {
+    transform: scale(0.97);
+}
