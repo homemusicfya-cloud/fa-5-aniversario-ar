@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const carpeta = "experiencias/01/canciones/";
 
     const canciones = [
-        "Megadeth - Killing ls My Business... and Business Is Good! - 01 - Last Rites + Loved to Death.mp3"
+        "Megadeth - Killing Is My Business... and Business Is Good! - 01 - Last Rites + Loved to Death.mp3"
     ];
 
     lista.innerHTML = "";
