@@ -6,56 +6,139 @@
     <meta charset="UTF-8">
 
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <meta name="theme-color"
-          content="#000000">
+    <meta name="theme-color" content="#050b18">
 
-    <title>5 Aniversario F&A</title>
+    <title>5to Aniversario F&A</title>
 
-    <link rel="stylesheet"
-          href="style.css">
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
 
-    <main class="contenedor">
+    <!-- =====================================================
+         PANTALLA DE BIENVENIDA
+         ===================================================== -->
 
-        <section class="tarjeta">
+    <section id="pantallaInicio" class="pantalla inicio">
 
-            <div class="numero">
+        <div class="inicio-contenido">
+
+            <div class="numero-5">
                 5
             </div>
 
-            <h1>
+            <div class="texto-aniversario">
                 ANIVERSARIO
-            </h1>
+            </div>
 
-            <div class="linea"></div>
+            <div class="linea-animada"></div>
 
-            <h2>
-                F&A
-            </h2>
+            <div class="iniciales">
+                F<span>&</span>A
+            </div>
 
-            <p class="descripcion">
-                Una colección especial de canciones
-            </p>
+            <div class="mensaje">
 
-            <div id="listaCanciones"
-                 class="lista-canciones">
-
-                <p class="cargando">
-                    Cargando canciones...
-                </p>
+                Cada momento contigo es mágico,
+                el tiempo brilla y pasa rápido
+                estando a tu lado, celebro este
+                5to aniversario con este regalo
+                de tu banda favorita porque sé
+                que te encanta y me gusta verte feliz,
+                te amo mucho &lt;3
 
             </div>
 
-        </section>
+            <div class="desliza">
 
-    </main>
+                <div class="flecha">
+                    ↑
+                </div>
 
-    <script src="app.js?v=2"></script>
+                <span>
+                    DESLIZA
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PANTALLA DEL REPRODUCTOR
+         ===================================================== -->
+
+    <section id="pantallaMusica" class="pantalla musica">
+
+        <div class="musica-contenido">
+
+            <div class="encabezado-musica">
+
+                <div>
+
+                    <span class="pequeno">
+                        5to ANIVERSARIO
+                    </span>
+
+                    <h1>
+                        F&A
+                    </h1>
+
+                </div>
+
+                <div id="numeroNfc" class="nfc-indicador">
+                    NFC 01
+                </div>
+
+            </div>
+
+
+            <div class="titulo-musica">
+
+                <div class="icono-musica">
+                    ♪
+                </div>
+
+                <div>
+
+                    <span>
+                        TU BANDA FAVORITA
+                    </span>
+
+                    <h2>
+                        Canciones para ti
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div id="listaCanciones" class="lista-canciones">
+
+                <div class="cargando">
+
+                    <div class="spinner"></div>
+
+                    <span>
+                        Cargando canciones...
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <script src="app.js?v=3"></script>
 
 </body>
 
