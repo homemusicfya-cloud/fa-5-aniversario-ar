@@ -55,72 +55,181 @@ document.addEventListener("DOMContentLoaded", async function () {
     numeroNfc.textContent =
         "NFC " + nfc;
 
+/* =====================================================
+   TRANSICIÓN POR DESLIZAMIENTO
+   ===================================================== */
 
-    /* =====================================================
-       TRANSICIÓN POR DESLIZAMIENTO
-       ===================================================== */
-
-    let inicioTouchY = 0;
-
-    let finTouchY = 0;
-
-
-    document.addEventListener(
-        "touchstart",
-        function (event) {
-
-            inicioTouchY =
-                event.changedTouches[0].screenY;
-
-        },
-        { passive: true }
-    );
+let inicioTouchY = 0;
+let movimientoTouchY = 0;
+let tocando = false;
 
 
-    document.addEventListener(
-        "touchend",
-        function (event) {
+/*
+ * Detectamos el dedo directamente sobre
+ * la pantalla de inicio.
+ */
 
-            finTouchY =
-                event.changedTouches[0].screenY;
+pantallaInicio.addEventListener(
+    "touchstart",
+    function (event) {
 
-            comprobarDeslizamiento();
+        if (event.touches.length !== 1) {
+            return;
+        }
 
-        },
-        { passive: true }
-    );
+        inicioTouchY =
+            event.touches[0].clientY;
+
+        movimientoTouchY =
+            inicioTouchY;
+
+        tocando = true;
+
+    },
+    { passive: true }
+);
 
 
-    function comprobarDeslizamiento() {
+/*
+ * Mientras el dedo se mueve.
+ */
 
-        const diferencia =
-            inicioTouchY - finTouchY;
+pantallaInicio.addEventListener(
+    "touchmove",
+    function (event) {
+
+        if (!tocando) {
+            return;
+        }
+
+        movimientoTouchY =
+            event.touches[0].clientY;
+
+    },
+    { passive: true }
+);
+
+
+/*
+ * Cuando levanta el dedo.
+ */
+
+pantallaInicio.addEventListener(
+    "touchend",
+    function () {
+
+        if (!tocando) {
+            return;
+        }
+
+        tocando = false;
+
+        const distancia =
+            inicioTouchY - movimientoTouchY;
 
 
         /*
-         * Si desliza hacia arriba
+         * Deslizamiento hacia ARRIBA
+         *
+         * 40px es suficiente para activar
+         * la transición.
          */
 
-        if (diferencia > 70) {
+        if (distancia > 40) {
 
             mostrarMusica();
 
         }
 
+    },
+    { passive: true }
+);
 
-        /*
-         * Si está en la música y desliza hacia abajo,
-         * regresamos a la portada.
-         */
 
-        if (diferencia < -100 &&
-            pantallaMusica.classList.contains("visible")) {
+/*
+ * También funciona con el dedo
+ * aunque el movimiento sea rápido.
+ */
 
-            mostrarInicio();
+pantallaInicio.addEventListener(
+    "touchcancel",
+    function () {
 
-        }
+        tocando = false;
 
+    },
+    { passive: true }
+);
+
+
+/* =====================================================
+   TRANSICIÓN
+   ===================================================== */
+
+function mostrarMusica() {
+
+    /*
+     * Evitamos ejecutar la transición
+     * varias veces.
+     */
+
+    if (
+        pantallaMusica.classList.contains("visible")
+    ) {
+        return;
     }
+
+
+    pantallaInicio.classList.add(
+        "salida"
+    );
+
+
+    pantallaMusica.classList.add(
+        "visible"
+    );
+
+
+    setTimeout(
+        function () {
+
+            pantallaInicio.style.display =
+                "none";
+
+        },
+        900
+    );
+
+}
+
+
+/* =====================================================
+   REGRESAR A LA PORTADA
+   ===================================================== */
+
+function mostrarInicio() {
+
+    pantallaInicio.style.display =
+        "flex";
+
+
+    pantallaMusica.classList.remove(
+        "visible"
+    );
+
+
+    setTimeout(
+        function () {
+
+            pantallaInicio.classList.remove(
+                "salida"
+            );
+
+        },
+        20
+    );
+
+}
 
 
     /* =====================================================
