@@ -818,23 +818,93 @@ document.addEventListener("DOMContentLoaded", async function () {
         /* =================================================
            TERMINÓ
            ================================================= */
+audio.addEventListener(
+    "ended",
+    function () {
 
-        audio.addEventListener(
-            "ended",
-            function () {
+        botonPlay.textContent = "▶";
 
-                botonPlay.textContent =
-                    "▶";
-
-                tarjeta.classList.remove(
-                    "reproduciendo"
-                );
-
-                barra.value =
-                    "0";
-
-            }
+        tarjeta.classList.remove(
+            "reproduciendo"
         );
+
+        barra.value = "0";
+
+
+        /* =================================================
+           REPRODUCCIÓN AUTOMÁTICA DEL ÁLBUM
+           ================================================= */
+
+        const tarjetas =
+            Array.from(
+                listaCanciones.querySelectorAll(
+                    ".cancion"
+                )
+            );
+
+
+        const posicionActual =
+            tarjetas.indexOf(tarjeta);
+
+
+        if (posicionActual === -1) {
+            return;
+        }
+
+
+        /*
+           Si hay una siguiente canción,
+           reproducirla.
+
+           Si terminó la última,
+           volver a la primera.
+        */
+
+        let siguientePosicion =
+            posicionActual + 1;
+
+
+        if (
+            siguientePosicion >=
+            tarjetas.length
+        ) {
+
+            siguientePosicion = 0;
+
+        }
+
+
+        const siguienteTarjeta =
+            tarjetas[siguientePosicion];
+
+
+        const siguienteAudio =
+            siguienteTarjeta.querySelector(
+                "audio"
+            );
+
+
+        const siguienteBoton =
+            siguienteTarjeta.querySelector(
+                ".boton-play"
+            );
+
+
+        if (
+            siguienteAudio &&
+            siguienteBoton
+        ) {
+
+            siguienteAudio.currentTime = 0;
+
+            siguienteAudio.play();
+
+        }
+
+    }
+);
+        
+        
 
     }
 
