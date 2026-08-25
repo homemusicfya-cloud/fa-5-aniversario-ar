@@ -3,9 +3,13 @@
    ========================================================= */
 
 * {
+
     box-sizing: border-box;
+
     margin: 0;
+
     padding: 0;
+
 }
 
 
@@ -13,69 +17,67 @@ html,
 body {
 
     width: 100%;
-    height: 100%;
 
-    overflow: hidden;
+    min-height: 100%;
 
-    background: #030711;
+}
 
-    color: white;
+
+body {
+
+    background:
+        radial-gradient(
+            circle at center,
+            #07152d 0%,
+            #020817 45%,
+            #01040b 100%
+        );
+
+    color: #ffffff;
 
     font-family:
         Arial,
         Helvetica,
         sans-serif;
 
-    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
 
 }
 
 
 /* =========================================================
-   PANTALLAS
+   PANTALLA DE INICIO
    ========================================================= */
 
-.pantalla {
+.inicio {
 
     position: fixed;
 
     inset: 0;
 
-    width: 100%;
+    width: 100vw;
+
     height: 100vh;
 
-    overflow: hidden;
-
-}
-
-
-/* =========================================================
-   PORTADA
-   ========================================================= */
-
-.inicio {
+    height: 100dvh;
 
     display: flex;
 
-    justify-content: center;
-
     align-items: center;
 
-    background:
+    justify-content: center;
 
-        radial-gradient(
-            circle at 50% 40%,
-            rgba(40, 105, 180, 0.13),
-            transparent 40%
-        ),
-
-        #030711;
+    text-align: center;
 
     z-index: 10;
 
-    transition:
-        transform 0.9s cubic-bezier(.77,0,.18,1),
-        opacity 0.8s ease;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(14, 39, 78, .35),
+            transparent 45%
+        ),
+        #020817;
 
     touch-action: none;
 
@@ -83,12 +85,17 @@ body {
 
     -webkit-user-select: none;
 
+    transition:
+        transform .9s ease,
+        opacity .9s ease;
+
 }
 
 
 .inicio.salida {
 
-    transform: translateY(-100%);
+    transform:
+        translateY(-100%);
 
     opacity: 0;
 
@@ -99,11 +106,10 @@ body {
 
     width: 90%;
 
-    max-width: 480px;
+    max-width: 700px;
 
-    text-align: center;
-
-    padding: 30px;
+    animation:
+        aparecer 1.5s ease both;
 
 }
 
@@ -112,88 +118,64 @@ body {
    5to
    ========================================================= */
 
-.numero-5 {
+.numero-aniversario {
 
     display: flex;
 
+    align-items: flex-end;
+
     justify-content: center;
 
-    align-items: baseline;
+    height: 145px;
 
-    line-height: 1;
-
-    opacity: 0;
-
-    transform:
-        translateY(30px)
-        scale(.9);
+    margin-bottom: 8px;
 
     animation:
-        aparecerNumero
-        1.4s
-        cubic-bezier(.2,.8,.2,1)
-        forwards;
+        aparecerNumero 1.4s ease both;
 
 }
 
 
-/* 5 GRANDE */
-
-.numero-5 .numero {
+.numero-5 {
 
     font-size:
         clamp(
             120px,
-            30vw,
-            170px
+            28vw,
+            190px
         );
 
     font-weight: 200;
 
     line-height: .8;
 
-    letter-spacing: 2px;
+    letter-spacing: -8px;
+
+    text-shadow:
+        0 0 25px
+        rgba(255,255,255,.12);
 
 }
 
 
-/* to PEQUEÑO */
-
-.numero-5 .ordinal {
-
-    margin-left: 5px;
+.letras-to {
 
     font-size:
         clamp(
-            24px,
-            6vw,
-            36px
+            32px,
+            8vw,
+            52px
         );
 
     font-weight: 300;
 
-    line-height: 1;
+    margin-left: 8px;
 
-    opacity: .75;
+    margin-bottom: 14px;
 
-    position: relative;
+    letter-spacing: 1px;
 
-    top: -42px;
-
-}
-
-
-@keyframes aparecerNumero {
-
-    to {
-
-        opacity: 1;
-
-        transform:
-            translateY(0)
-            scale(1);
-
-    }
+    opacity: .9;
 
 }
 
@@ -204,40 +186,607 @@ body {
 
 .texto-aniversario {
 
-    margin-top: 25px;
-
     font-size:
         clamp(
-            20px,
-            6vw,
-            32px
+            32px,
+            8vw,
+            64px
         );
+
+    font-weight: 200;
 
     letter-spacing:
         clamp(
-            5px,
-            2vw,
-            12px
+            8px,
+            2.5vw,
+            18px
         );
 
-    font-weight: 300;
-
-    opacity: 0;
-
-    transform:
-        translateY(20px);
+    margin-left:
+        clamp(
+            8px,
+            2.5vw,
+            18px
+        );
 
     animation:
-        aparecerTexto
-        1.2s
-        .5s
-        ease
-        forwards;
+        aparecer 1.8s ease both;
 
 }
 
 
-@keyframes aparecerTexto {
+/* =========================================================
+   LÍNEA
+   ========================================================= */
+
+.linea {
+
+    width: 230px;
+
+    max-width: 60%;
+
+    height: 1px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .65
+        );
+
+    margin: 32px auto;
+
+    animation:
+        expandirLinea 2s ease both;
+
+}
+
+
+/* =========================================================
+   INICIALES
+   ========================================================= */
+
+.iniciales {
+
+    font-size:
+        clamp(
+            35px,
+            8vw,
+            55px
+        );
+
+    font-weight: 200;
+
+    letter-spacing: 12px;
+
+    animation:
+        aparecer 2s ease both;
+
+}
+
+
+/* =========================================================
+   MENSAJE
+   ========================================================= */
+
+.mensaje {
+
+    max-width: 650px;
+
+    margin: 30px auto 0;
+
+    font-size:
+        clamp(
+            14px,
+            3.5vw,
+            18px
+        );
+
+    line-height: 1.8;
+
+    font-weight: 300;
+
+    color:
+        rgba(
+            255,
+            255,
+            255,
+            .82
+        );
+
+    animation:
+        aparecer 2.3s ease both;
+
+}
+
+
+/* =========================================================
+   DESLIZAR
+   ========================================================= */
+
+.indicador-deslizar {
+
+    margin-top: 35px;
+
+    font-size: 12px;
+
+    letter-spacing: 2px;
+
+    opacity: .55;
+
+    animation:
+        aparecer 2.7s ease both;
+
+}
+
+
+.flecha {
+
+    font-size: 28px;
+
+    margin-top: 8px;
+
+    animation:
+        flecha 1.5s infinite ease-in-out;
+
+}
+
+
+/* =========================================================
+   PANTALLA DE MÚSICA
+   ========================================================= */
+
+.musica {
+
+    position: relative;
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    min-height: 100dvh;
+
+    padding:
+        35px 15px 60px;
+
+    opacity: 0;
+
+    transform:
+        translateY(40px);
+
+    transition:
+        opacity .9s ease,
+        transform .9s ease;
+
+}
+
+
+.musica.visible {
+
+    opacity: 1;
+
+    transform:
+        translateY(0);
+
+}
+
+
+.musica-contenido {
+
+    width: 100%;
+
+    max-width: 760px;
+
+    margin: 0 auto;
+
+}
+
+
+/* =========================================================
+   VINILO
+   ========================================================= */
+
+.vinilo-contenedor {
+
+    position: relative;
+
+    width:
+        min(
+            90vw,
+            620px
+        );
+
+    aspect-ratio: 1 / 1;
+
+    margin:
+        0 auto 20px;
+
+    overflow: hidden;
+
+}
+
+
+/* =========================================================
+   VIDEO
+   ========================================================= */
+
+#videoVinilo {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   CANVAS
+   ========================================================= */
+
+#canvasVinilo {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    display: block;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   PORTADA
+   ========================================================= */
+
+.portada-vinilo {
+
+    position: absolute;
+
+    /*
+       POSICIÓN DEL CUADRO AZUL
+       DEL VIDEO
+    */
+
+    left: 12.35%;
+
+    top: 26.4%;
+
+    width: 47.2%;
+
+    aspect-ratio: 1 / 1;
+
+    object-fit: cover;
+
+    z-index: 2;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+.encabezado-musica {
+
+    text-align: center;
+
+    margin:
+        0 auto 30px;
+
+}
+
+
+.numero-nfc {
+
+    font-size: 12px;
+
+    letter-spacing: 4px;
+
+    opacity: .5;
+
+    margin-bottom: 12px;
+
+}
+
+
+.encabezado-musica h1 {
+
+    font-size:
+        clamp(
+            25px,
+            6vw,
+            38px
+        );
+
+    font-weight: 300;
+
+    letter-spacing: 2px;
+
+}
+
+
+.encabezado-musica p {
+
+    margin-top: 8px;
+
+    font-size: 14px;
+
+    opacity: .55;
+
+}
+
+
+/* =========================================================
+   LISTA DE CANCIONES
+   ========================================================= */
+
+.lista-canciones {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+
+}
+
+
+/* =========================================================
+   TARJETA
+   ========================================================= */
+
+.cancion {
+
+    position: relative;
+
+    padding:
+        17px;
+
+    border-radius: 18px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .045
+        );
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .10
+        );
+
+    backdrop-filter:
+        blur(12px);
+
+    -webkit-backdrop-filter:
+        blur(12px);
+
+    transition:
+        transform .25s ease,
+        background .25s ease,
+        border-color .25s ease;
+
+}
+
+
+.cancion.reproduciendo {
+
+    transform:
+        scale(1.015);
+
+    background:
+        rgba(
+            50,
+            130,
+            255,
+            .10
+        );
+
+    border-color:
+        rgba(
+            90,
+            160,
+            255,
+            .35
+        );
+
+}
+
+
+/* =========================================================
+   NOMBRE
+   ========================================================= */
+
+.cancion-nombre {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-bottom: 14px;
+
+    font-size: 14px;
+
+    line-height: 1.4;
+
+}
+
+
+.numero-cancion {
+
+    min-width: 30px;
+
+    font-size: 12px;
+
+    opacity: .45;
+
+}
+
+
+/* =========================================================
+   CONTROLES
+   ========================================================= */
+
+.controles {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+/* =========================================================
+   BOTÓN PLAY
+   ========================================================= */
+
+.boton-play {
+
+    width: 45px;
+
+    height: 45px;
+
+    flex-shrink: 0;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .95
+        );
+
+    color: #07101f;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+/* =========================================================
+   BARRA
+   ========================================================= */
+
+.barra-contenedor {
+
+    flex: 1;
+
+}
+
+
+.barra {
+
+    width: 100%;
+
+    accent-color:
+        #ffffff;
+
+    cursor: pointer;
+
+}
+
+
+.tiempos {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    font-size: 10px;
+
+    opacity: .45;
+
+    margin-top: 3px;
+
+}
+
+
+/* =========================================================
+   VOLUMEN
+   ========================================================= */
+
+.volumen {
+
+    width: 65px;
+
+    accent-color:
+        #ffffff;
+
+}
+
+
+/* =========================================================
+   CARGANDO
+   ========================================================= */
+
+.cargando {
+
+    text-align: center;
+
+    padding: 40px 15px;
+
+    opacity: .5;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   ANIMACIONES
+   ========================================================= */
+
+@keyframes aparecer {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(15px);
+
+    }
 
     to {
 
@@ -251,94 +800,14 @@ body {
 }
 
 
-/* =========================================================
-   LÍNEA
-   ========================================================= */
-
-.linea-animada {
-
-    width: 0;
-
-    height: 1px;
-
-    margin:
-        28px auto;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            .8
-        );
-
-    animation:
-        crecerLinea
-        1s
-        1.1s
-        ease
-        forwards;
-
-}
-
-
-@keyframes crecerLinea {
-
-    to {
-
-        width: 90px;
-
-    }
-
-}
-
-
-/* =========================================================
-   F&A
-   ========================================================= */
-
-.iniciales {
-
-    font-size:
-        clamp(
-            38px,
-            11vw,
-            55px
-        );
-
-    font-weight: 200;
-
-    letter-spacing: 12px;
-
-    margin-left: 12px;
-
-    opacity: 0;
-
-    animation:
-        aparecerIniciales
-        1.2s
-        1.3s
-        ease
-        forwards;
-
-}
-
-
-.iniciales span {
-
-    opacity: .7;
-
-}
-
-
-@keyframes aparecerIniciales {
+@keyframes aparecerNumero {
 
     from {
 
         opacity: 0;
 
         transform:
-            scale(.8);
+            scale(.75);
 
     }
 
@@ -354,110 +823,19 @@ body {
 }
 
 
-/* =========================================================
-   MENSAJE
-   ========================================================= */
+@keyframes expandirLinea {
 
-.mensaje {
+    from {
 
-    margin:
-        25px auto 0;
+        width: 0;
 
-    max-width: 420px;
-
-    color:
-        rgba(
-            255,
-            255,
-            255,
-            .72
-        );
-
-    font-size: 14px;
-
-    line-height: 1.8;
-
-    letter-spacing: .3px;
-
-    opacity: 0;
-
-    transform:
-        translateY(15px);
-
-    animation:
-        aparecerMensaje
-        1.5s
-        1.6s
-        ease
-        forwards;
-
-}
-
-
-@keyframes aparecerMensaje {
-
-    to {
-
-        opacity: 1;
-
-        transform:
-            translateY(0);
+        opacity: 0;
 
     }
 
-}
-
-
-/* =========================================================
-   DESLIZA
-   ========================================================= */
-
-.desliza {
-
-    position: absolute;
-
-    bottom: 35px;
-
-    left: 50%;
-
-    transform:
-        translateX(-50%);
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    gap: 7px;
-
-    color:
-        rgba(
-            255,
-            255,
-            255,
-            .45
-        );
-
-    font-size: 9px;
-
-    letter-spacing: 3px;
-
-    animation:
-        aparecerDesliza
-        1s
-        2.5s
-        ease
-        forwards;
-
-    opacity: 0;
-
-}
-
-
-@keyframes aparecerDesliza {
-
     to {
+
+        width: 230px;
 
         opacity: 1;
 
@@ -466,21 +844,7 @@ body {
 }
 
 
-.flecha {
-
-    font-size: 28px;
-
-    line-height: 1;
-
-    animation:
-        moverFlecha
-        1.5s
-        infinite;
-
-}
-
-
-@keyframes moverFlecha {
+@keyframes flecha {
 
     0%,
     100% {
@@ -501,710 +865,57 @@ body {
 
 
 /* =========================================================
-   PANTALLA MUSICAL
+   CELULAR
    ========================================================= */
 
-.musica {
+@media (
+    max-width: 600px
+) {
 
-    display: flex;
+    .inicio {
 
-    justify-content: center;
-
-    overflow-y: auto;
-
-    background:
-
-        radial-gradient(
-            circle at 50% 0%,
-            rgba(
-                47,
-                139,
-                255,
-                .22
-            ),
-            transparent 35%
-        ),
-
-        radial-gradient(
-            circle at 100% 80%,
-            rgba(
-                20,
-                74,
-                150,
-                .16
-            ),
-            transparent 35%
-        ),
-
-        linear-gradient(
-            145deg,
-            #030711,
-            #071528,
-            #020610
-        );
-
-    transform:
-        translateY(100%);
-
-    transition:
-        transform
-        .9s
-        cubic-bezier(.77,0,.18,1);
-
-}
-
-
-.musica.visible {
-
-    transform:
-        translateY(0);
-
-}
-
-
-.musica-contenido {
-
-    width: 100%;
-
-    max-width: 600px;
-
-    padding:
-        35px
-        20px
-        70px;
-
-}
-
-
-/* =========================================================
-   ENCABEZADO MUSICAL
-   ========================================================= */
-
-.encabezado-musica {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: flex-start;
-
-    margin-bottom: 35px;
-
-}
-
-
-.pequeno {
-
-    display: block;
-
-    font-size: 9px;
-
-    letter-spacing: 4px;
-
-    color:
-        rgba(
-            255,
-            255,
-            255,
-            .4
-        );
-
-}
-
-
-.encabezado-musica h1 {
-
-    margin-top: 8px;
-
-    font-size: 36px;
-
-    font-weight: 200;
-
-    letter-spacing: 8px;
-
-}
-
-
-.nfc-indicador {
-
-    padding:
-        8px
-        13px;
-
-    border:
-        1px solid
-        rgba(
-            95,
-            174,
-            255,
-            .25
-        );
-
-    border-radius: 20px;
-
-    color:
-        rgba(
-            139,
-            199,
-            255,
-            .7
-        );
-
-    font-size: 9px;
-
-    letter-spacing: 2px;
-
-    background:
-        rgba(
-            30,
-            90,
-            150,
-            .12
-        );
-
-}
-
-
-/* =========================================================
-   TÍTULO DE MÚSICA
-   ========================================================= */
-
-.titulo-musica {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 15px;
-
-    margin-bottom: 25px;
-
-}
-
-
-.icono-musica {
-
-    width: 50px;
-
-    height: 50px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    border-radius: 16px;
-
-    font-size: 25px;
-
-    background:
-
-        linear-gradient(
-            145deg,
-            rgba(
-                54,
-                145,
-                255,
-                .30
-            ),
-            rgba(
-                20,
-                75,
-                150,
-                .08
-            )
-        );
-
-    border:
-        1px solid
-        rgba(
-            100,
-            180,
-            255,
-            .18
-        );
-
-    box-shadow:
-        0 0 25px
-        rgba(
-            30,
-            130,
-            255,
-            .12
-        );
-
-}
-
-
-.titulo-musica span {
-
-    font-size: 9px;
-
-    letter-spacing: 3px;
-
-    color:
-        rgba(
-            255,
-            255,
-            255,
-            .4
-        );
-
-}
-
-
-.titulo-musica h2 {
-
-    margin-top: 5px;
-
-    font-size: 20px;
-
-    font-weight: 400;
-
-}
-
-
-/* =========================================================
-   LISTA
-   ========================================================= */
-
-.lista-canciones {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 15px;
-
-}
-
-
-/* =========================================================
-   TARJETA
-   ========================================================= */
-
-.cancion {
-
-    position: relative;
-
-    padding: 17px;
-
-    border-radius: 22px;
-
-    background:
-
-        linear-gradient(
-            145deg,
-            rgba(
-                255,
-                255,
-                255,
-                .075
-            ),
-            rgba(
-                255,
-                255,
-                255,
-                .025
-            )
-        );
-
-    border:
-        1px solid
-        rgba(
-            120,
-            190,
-            255,
-            .12
-        );
-
-    box-shadow:
-
-        inset
-        0 1px 0
-        rgba(
-            255,
-            255,
-            255,
-            .06
-        ),
-
-        0 10px 35px
-        rgba(
-            0,
-            0,
-            0,
-            .25
-        );
-
-    backdrop-filter:
-        blur(18px);
-
-    -webkit-backdrop-filter:
-        blur(18px);
-
-    transition:
-        transform .25s ease,
-        border-color .25s ease;
-
-}
-
-
-.cancion.reproduciendo {
-
-    border-color:
-        rgba(
-            70,
-            165,
-            255,
-            .45
-        );
-
-    box-shadow:
-
-        0 0 25px
-        rgba(
-            40,
-            130,
-            255,
-            .12
-        ),
-
-        inset
-        0 1px 0
-        rgba(
-            255,
-            255,
-            255,
-            .08
-        );
-
-}
-
-
-/* =========================================================
-   NOMBRE
-   ========================================================= */
-
-.cancion-nombre {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    min-height: 40px;
-
-    padding-bottom: 12px;
-
-    color:
-        rgba(
-            255,
-            255,
-            255,
-            .9
-        );
-
-    font-size: 13px;
-
-    line-height: 1.45;
-
-}
-
-
-.numero-cancion {
-
-    min-width: 28px;
-
-    color:
-        rgba(
-            90,
-            174,
-            255,
-            .8
-        );
-
-    font-size: 10px;
-
-    letter-spacing: 1px;
-
-}
-
-
-/* =========================================================
-   CONTROLES
-   ========================================================= */
-
-.controles {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-}
-
-
-.boton-play {
-
-    width: 42px;
-
-    height: 42px;
-
-    flex-shrink: 0;
-
-    border: none;
-
-    border-radius: 50%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    color: white;
-
-    background:
-
-        linear-gradient(
-            145deg,
-            #328de8,
-            #15529b
-        );
-
-    box-shadow:
-
-        0 5px 20px
-        rgba(
-            20,
-            120,
-            240,
-            .25
-        );
-
-    cursor: pointer;
-
-    font-size: 15px;
-
-}
-
-
-.boton-play:active {
-
-    transform:
-        scale(.92);
-
-}
-
-
-.barra-contenedor {
-
-    flex: 1;
-
-}
-
-
-.barra {
-
-    width: 100%;
-
-    height: 4px;
-
-    appearance: none;
-
-    -webkit-appearance: none;
-
-    border-radius: 10px;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            .12
-        );
-
-    outline: none;
-
-}
-
-
-.barra::-webkit-slider-thumb {
-
-    appearance: none;
-
-    -webkit-appearance: none;
-
-    width: 12px;
-
-    height: 12px;
-
-    border-radius: 50%;
-
-    background: #62b4ff;
-
-    box-shadow:
-        0 0 10px
-        rgba(
-            80,
-            170,
-            255,
-            .5
-        );
-
-}
-
-
-.tiempos {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    margin-top: 7px;
-
-    color:
-        rgba(
-            255,
-            255,
-            255,
-            .35
-        );
-
-    font-size: 9px;
-
-}
-
-
-/* =========================================================
-   VOLUMEN
-   ========================================================= */
-
-.volumen {
-
-    width: 55px;
-
-    appearance: none;
-
-    -webkit-appearance: none;
-
-    height: 3px;
-
-    border-radius: 10px;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            .12
-        );
-
-}
-
-
-.volumen::-webkit-slider-thumb {
-
-    appearance: none;
-
-    -webkit-appearance: none;
-
-    width: 10px;
-
-    height: 10px;
-
-    border-radius: 50%;
-
-    background: #69b7ff;
-
-}
-
-
-/* =========================================================
-   CARGANDO
-   ========================================================= */
-
-.cargando {
-
-    min-height: 180px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 15px;
-
-    color:
-        rgba(
-            255,
-            255,
-            255,
-            .4
-        );
-
-    font-size: 12px;
-
-}
-
-
-.spinner {
-
-    width: 25px;
-
-    height: 25px;
-
-    border-radius: 50%;
-
-    border:
-        2px solid
-        rgba(
-            255,
-            255,
-            255,
-            .1
-        );
-
-    border-top-color:
-        #55aaff;
-
-    animation:
-        girar
-        .8s
-        linear
-        infinite;
-
-}
-
-
-@keyframes girar {
-
-    to {
-
-        transform:
-            rotate(360deg);
+        padding:
+            20px;
 
     }
 
-}
+
+    .numero-aniversario {
+
+        height: 105px;
+
+    }
 
 
-/* =========================================================
-   CELULARES PEQUEÑOS
-   ========================================================= */
+    .numero-5 {
 
-@media (max-width: 380px) {
+        font-size: 120px;
 
-    .inicio-contenido {
+    }
 
-        padding: 20px;
+
+    .letras-to {
+
+        font-size: 32px;
+
+        margin-bottom: 8px;
+
+    }
+
+
+    .texto-aniversario {
+
+        font-size: 32px;
+
+        letter-spacing: 8px;
+
+    }
+
+
+    .linea {
+
+        margin:
+            24px auto;
 
     }
 
@@ -1218,11 +929,44 @@ body {
     }
 
 
-    .musica-contenido {
+    .indicador-deslizar {
 
-        padding-left: 15px;
+        margin-top: 25px;
 
-        padding-right: 15px;
+    }
+
+
+    .musica {
+
+        padding-top: 20px;
+
+    }
+
+
+    .vinilo-contenedor {
+
+        width: 96vw;
+
+    }
+
+
+    .cancion {
+
+        padding: 14px;
+
+    }
+
+
+    .controles {
+
+        gap: 7px;
+
+    }
+
+
+    .volumen {
+
+        display: none;
 
     }
 
