@@ -7,53 +7,38 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     >
 
-    <meta
-        name="theme-color"
-        content="#020611"
-    >
+    <meta name="theme-color" content="#030711">
 
-    <title>
-        5to Aniversario F&A
-    </title>
+    <title>5to Aniversario F&A</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="stylesheet" href="style.css?v=5">
 
 </head>
 
-
 <body>
 
-
     <!-- =====================================================
-         PANTALLA DE INICIO
+         PORTADA
          ===================================================== -->
 
-    <section
-        id="pantallaInicio"
-        class="inicio"
-    >
+    <section id="pantallaInicio" class="pantalla inicio">
 
         <div class="inicio-contenido">
 
+            <!-- 5to -->
+            <div class="numero-5">
 
-            <div class="numero-aniversario">
+                <span class="numero">5</span>
 
-                <span class="numero-5">
-                    5
-                </span>
-
-                <span class="letras-to">
-                    to
-                </span>
+                <span class="ordinal">to</span>
 
             </div>
 
+
+            <!-- ANIVERSARIO -->
 
             <div class="texto-aniversario">
 
@@ -62,144 +47,114 @@
             </div>
 
 
-            <div class="linea">
+            <!-- LÍNEA -->
 
-            </div>
+            <div class="linea-animada"></div>
 
+
+            <!-- F&A -->
 
             <div class="iniciales">
 
-                F & A
+                F<span>&</span>A
 
             </div>
 
+
+            <!-- MENSAJE -->
 
             <div class="mensaje">
 
                 Cada momento contigo es mágico,
                 el tiempo brilla y pasa rápido
-                estando a tu lado.
-
-                <br><br>
-
-                Celebro este 5to aniversario
-                con este regalo de tu banda favorita
-                porque sé que te encanta
-                y me gusta verte feliz.
-
-                <br><br>
-
-                Te amo mucho &lt;3
+                estando a tu lado, celebro este
+                5to aniversario con este regalo
+                de tu banda favorita porque sé
+                que te encanta y me gusta verte feliz,
+                te amo mucho &lt;3
 
             </div>
 
 
-            <div class="indicador-deslizar">
+            <!-- INDICACIÓN -->
 
-                <span>
-                    Desliza hacia arriba
-                </span>
+            <div class="desliza">
 
                 <div class="flecha">
                     ↑
                 </div>
 
-            </div>
+                <span>
+                    DESLIZA
+                </span>
 
+            </div>
 
         </div>
 
     </section>
 
 
-
     <!-- =====================================================
-         PANTALLA DE MÚSICA
+         REPRODUCTOR
          ===================================================== -->
 
-    <section
-        id="pantallaMusica"
-        class="musica"
-    >
-
+    <section id="pantallaMusica" class="pantalla musica">
 
         <div class="musica-contenido">
 
 
-            <!-- =================================================
-                 ANIMACIÓN DEL DISCO
-                 ================================================= -->
-
-            <div class="vinilo-contenedor">
-
-
-                <!-- VIDEO ORIGINAL -->
-
-                <video
-                    id="videoVinilo"
-                    muted
-                    playsinline
-                    autoplay
-                    loop
-                >
-
-                    <source
-                        src="imagenes/portada.mp4"
-                        type="video/mp4"
-                    >
-
-                </video>
-
-
-                <!-- CANVAS PARA QUITAR FONDO -->
-
-                <canvas
-                    id="canvasVinilo"
-                >
-                </canvas>
-
-
-                <!-- PORTADA DEL ÁLBUM -->
-
-                <img
-                    id="portadaAlbum"
-                    class="portada-vinilo"
-                    src=""
-                    alt="Portada del álbum"
-                >
-
-
-            </div>
-
-
-
-            <!-- =================================================
-                 INFORMACIÓN DEL NFC
-                 ================================================= -->
+            <!-- ENCABEZADO -->
 
             <div class="encabezado-musica">
 
-                <div class="numero-nfc">
-                    NFC <span id="numeroNfc">01</span>
+                <div>
+
+                    <span class="pequeno">
+                        5to ANIVERSARIO
+                    </span>
+
+                    <h1>
+                        F&A
+                    </h1>
+
                 </div>
 
 
-                <h1>
-                    Tu banda favorita
-                </h1>
-
-
-                <p>
-                    Una colección especial para ti
-                </p>
+                <div
+                    id="numeroNfc"
+                    class="nfc-indicador"
+                >
+                    NFC 01
+                </div>
 
             </div>
 
 
+            <!-- TÍTULO -->
 
-            <!-- =================================================
-                 LISTA DE CANCIONES
-                 ================================================= -->
+            <div class="titulo-musica">
+
+                <div class="icono-musica">
+                    ♪
+                </div>
+
+                <div>
+
+                    <span>
+                        TU BANDA FAVORITA
+                    </span>
+
+                    <h2>
+                        Canciones para ti
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <!-- CANCIONES -->
 
             <div
                 id="listaCanciones"
@@ -208,7 +163,11 @@
 
                 <div class="cargando">
 
-                    Cargando canciones...
+                    <div class="spinner"></div>
+
+                    <span>
+                        Cargando canciones...
+                    </span>
 
                 </div>
 
@@ -217,15 +176,12 @@
 
         </div>
 
-
     </section>
 
 
+    <!-- JAVASCRIPT -->
 
-    <script
-        src="app.js"
-    ></script>
-
+    <script src="app.js?v=5"></script>
 
 </body>
 
