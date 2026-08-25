@@ -1,980 +1,1475 @@
-document.addEventListener("DOMContentLoaded", async function () {
+/* =========================================================
+   SMART ALBUM - 5TO ANIVERSARIO F&A
+   ========================================================= */
 
-    /* =====================================================
-       ELEMENTOS
-       ===================================================== */
-
-    const pantallaInicio =
-        document.getElementById("pantallaInicio");
-
-    const pantallaMusica =
-        document.getElementById("pantallaMusica");
-
-    const listaCanciones =
-        document.getElementById("listaCanciones");
-
-    const numeroNfc =
-        document.getElementById("numeroNfc");
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
 
-    /* =====================================================
-       DETECTAR NFC
-       ===================================================== */
+        /* =================================================
+           ELEMENTOS
+           ================================================= */
 
-    const parametros =
-        new URLSearchParams(window.location.search);
-
-    let nfc = parametros.get("nfc");
-
-    if (!nfc) {
-        nfc = "01";
-    }
-
-    nfc = String(parseInt(nfc, 10)).padStart(2, "0");
-
-    numeroNfc.textContent = "NFC " + nfc;
-
-
-    /* =====================================================
-       DESLIZAMIENTO HACIA ARRIBA
-       ===================================================== */
-
-    let inicioTouchY = 0;
-    let movimientoTouchY = 0;
-    let tocando = false;
-
-
-    pantallaInicio.addEventListener(
-        "touchstart",
-        function (event) {
-
-            if (event.touches.length !== 1) {
-                return;
-            }
-
-            inicioTouchY =
-                event.touches[0].clientY;
-
-            movimientoTouchY =
-                inicioTouchY;
-
-            tocando = true;
-
-        },
-        { passive: true }
-    );
-
-
-    pantallaInicio.addEventListener(
-        "touchmove",
-        function (event) {
-
-            if (!tocando) {
-                return;
-            }
-
-            movimientoTouchY =
-                event.touches[0].clientY;
-
-        },
-        { passive: true }
-    );
-
-
-    pantallaInicio.addEventListener(
-        "touchend",
-        function () {
-
-            if (!tocando) {
-                return;
-            }
-
-            tocando = false;
-
-            const distancia =
-                inicioTouchY - movimientoTouchY;
-
-            if (distancia > 40) {
-                mostrarMusica();
-            }
-
-        },
-        { passive: true }
-    );
-
-
-    /* =====================================================
-       MOSTRAR REPRODUCTOR
-       ===================================================== */
-
-    function mostrarMusica() {
-
-        if (
-            pantallaMusica.classList.contains("visible")
-        ) {
-            return;
-        }
-
-        pantallaInicio.classList.add("salida");
-
-        pantallaMusica.classList.add("visible");
-
-        setTimeout(function () {
-
-            pantallaInicio.style.display = "none";
-
-        }, 900);
-    }
-
-
-    /* =====================================================
-       BOTÓN DESLIZA
-       ===================================================== */
-
-    const botonDesliza =
-        document.querySelector(".desliza");
-
-    if (botonDesliza) {
-
-        botonDesliza.addEventListener(
-            "click",
-            mostrarMusica
-        );
-
-    }
-
-
-    /* =====================================================
-       CONFIGURACIÓN GITHUB
-       ===================================================== */
-
-    const repositorio =
-        "homemusicfya-cloud/fa-5-aniversario-ar";
-
-    /*
-       IMPORTANTE:
-
-       NFC 01 -> experiencias/01
-       NFC 02 -> experiencias/02
-       NFC 03 -> experiencias/03
-       NFC 04 -> experiencias/04
-       etc.
-    */
-
-    const carpetaNfc =
-        `experiencias/${nfc}`;
-
-
-    /* =====================================================
-       BUSCAR TODOS LOS MP3
-       ===================================================== */
-
-    async function buscarMp3(
-        ruta
-    ) {
-
-        const apiURL =
-            `https://api.github.com/repos/${repositorio}/contents/${ruta}`;
-
-        const respuesta =
-            await fetch(apiURL);
-
-        if (!respuesta.ok) {
-
-            throw new Error(
-                `No se pudo acceder a: ${ruta}`
+        const inicio =
+            document.getElementById(
+                "pantallaInicio"
             );
 
-        }
 
-        const archivos =
-            await respuesta.json();
-
-
-        /*
-           Si GitHub devuelve un solo archivo
-           lo convertimos en arreglo.
-        */
-
-        const lista =
-            Array.isArray(archivos)
-                ? archivos
-                : [archivos];
+        const musica =
+            document.getElementById(
+                "pantallaMusica"
+            );
 
 
-        let canciones = [];
+        const listaCanciones =
+            document.getElementById(
+                "listaCanciones"
+            );
 
 
-        for (
-            const archivo of lista
-        ) {
+        const numeroNfc =
+            document.getElementById(
+                "numeroNfc"
+            );
 
 
-            /* ---------------------------------------------
-               SI ES MP3
-               --------------------------------------------- */
-
-            if (
-                archivo.type === "file" &&
-                archivo.name
-                    .toLowerCase()
-                    .endsWith(".mp3")
-            ) {
-
-                canciones.push(archivo);
-
-                continue;
-
-            }
+        const video =
+            document.getElementById(
+                "videoVinilo"
+            );
 
 
-            /* ---------------------------------------------
-               SI ES CARPETA
-               BUSCAR DENTRO
-               --------------------------------------------- */
-
-            if (
-                archivo.type === "dir"
-            ) {
-
-                try {
-
-                    const cancionesDentro =
-                        await buscarMp3(
-                            archivo.path
-                        );
-
-                    canciones =
-                        canciones.concat(
-                            cancionesDentro
-                        );
-
-                } catch (error) {
-
-                    console.warn(
-                        "No se pudo leer:",
-                        archivo.path
-                    );
-
-                }
-
-            }
-
-        }
+        const canvas =
+            document.getElementById(
+                "canvasVinilo"
+            );
 
 
-        return canciones;
-
-    }
-
-
-    /* =====================================================
-       CARGAR CANCIONES DEL NFC
-       ===================================================== */
-
-    try {
-
-        listaCanciones.innerHTML = `
-            <div class="cargando">
-                <div class="spinner"></div>
-                <span>
-                    Cargando canciones...
-                </span>
-            </div>
-        `;
-
-
-        /*
-           AQUÍ está el cambio importante:
-
-           Ya NO buscamos solamente:
-
-           experiencias/02/canciones
-
-           Ahora buscamos TODO dentro de:
-
-           experiencias/02
-
-           incluyendo subcarpetas.
-        */
-
-        let canciones =
-            await buscarMp3(
-                carpetaNfc
+        const portada =
+            document.getElementById(
+                "portadaAlbum"
             );
 
 
         /* =================================================
-           ORDENAR CANCIONES
+           NFC
            ================================================= */
 
-        canciones.sort(
-            function (a, b) {
+        const parametros =
+            new URLSearchParams(
+                window.location.search
+            );
 
-                return a.name.localeCompare(
-                    b.name,
-                    undefined,
+
+        let nfc =
+            parametros.get("nfc");
+
+
+        if (!nfc) {
+
+            nfc = "01";
+
+        }
+
+
+        nfc =
+            String(
+                parseInt(
+                    nfc,
+                    10
+                )
+            ).padStart(
+                2,
+                "0"
+            );
+
+
+        numeroNfc.textContent =
+            nfc;
+
+
+        /* =================================================
+           PORTADA
+           ================================================= */
+
+        cargarPortada();
+
+
+        function cargarPortada() {
+
+            const jpg =
+                `portadas/${nfc}.jpg`;
+
+            const png =
+                `portadas/${nfc}.png`;
+
+            const webp =
+                `portadas/${nfc}.webp`;
+
+
+            portada.src =
+                jpg;
+
+
+            portada.onerror =
+                function () {
+
+                    if (
+                        portada.src.endsWith(
+                            ".jpg"
+                        )
+                    ) {
+
+                        portada.src =
+                            png;
+
+                        return;
+
+                    }
+
+
+                    if (
+                        portada.src.endsWith(
+                            ".png"
+                        )
+                    ) {
+
+                        portada.src =
+                            webp;
+
+                        return;
+
+                    }
+
+
+                    console.warn(
+                        "No se encontró portada para NFC",
+                        nfc
+                    );
+
+                };
+
+        }
+
+
+        /* =================================================
+           DESLIZAMIENTO
+           ================================================= */
+
+        let inicioY = 0;
+
+        let finalY = 0;
+
+        let tocando = false;
+
+
+        inicio.addEventListener(
+            "touchstart",
+            function (event) {
+
+                if (
+                    event.touches.length !== 1
+                ) {
+
+                    return;
+
+                }
+
+
+                inicioY =
+                    event.touches[0].clientY;
+
+                finalY =
+                    inicioY;
+
+                tocando = true;
+
+            },
+            {
+                passive: true
+            }
+        );
+
+
+        inicio.addEventListener(
+            "touchmove",
+            function (event) {
+
+                if (!tocando) {
+
+                    return;
+
+                }
+
+
+                finalY =
+                    event.touches[0].clientY;
+
+            },
+            {
+                passive: true
+            }
+        );
+
+
+        inicio.addEventListener(
+            "touchend",
+            function () {
+
+                if (!tocando) {
+
+                    return;
+
+                }
+
+
+                tocando = false;
+
+
+                const distancia =
+                    inicioY - finalY;
+
+
+                if (
+                    distancia > 40
+                ) {
+
+                    mostrarMusica();
+
+                }
+
+            },
+            {
+                passive: true
+            }
+        );
+
+
+        /* =================================================
+           MOSTRAR MÚSICA
+           ================================================= */
+
+        function mostrarMusica() {
+
+            inicio.classList.add(
+                "salida"
+            );
+
+
+            musica.classList.add(
+                "visible"
+            );
+
+
+            setTimeout(
+                function () {
+
+                    inicio.style.display =
+                        "none";
+
+                },
+                900
+            );
+
+        }
+
+
+        /* =================================================
+           VIDEO / CANVAS
+           ================================================= */
+
+        iniciarVideo();
+
+
+        function iniciarVideo() {
+
+            if (
+                !video ||
+                !canvas
+            ) {
+
+                return;
+
+            }
+
+
+            const ctx =
+                canvas.getContext(
+                    "2d",
                     {
-                        numeric: true,
-                        sensitivity: "base"
+                        willReadFrequently:
+                            true
                     }
                 );
 
+
+            function prepararCanvas() {
+
+                if (
+                    video.videoWidth === 0 ||
+                    video.videoHeight === 0
+                ) {
+
+                    return;
+
+                }
+
+
+                canvas.width =
+                    video.videoWidth;
+
+
+                canvas.height =
+                    video.videoHeight;
+
             }
-        );
 
 
-        /* =================================================
-           NO HAY CANCIONES
-           ================================================= */
+            function procesarFrame() {
 
-        if (
-            canciones.length === 0
-        ) {
+                if (
+                    video.readyState < 2
+                ) {
 
-            mostrarMensaje(
-                `No encontramos canciones en NFC ${nfc}.`
-            );
+                    solicitarFrame();
 
-            return;
+                    return;
 
-        }
+                }
 
 
-        /* =================================================
-           MOSTRAR CANCIONES
-           ================================================= */
+                if (
+                    canvas.width !==
+                    video.videoWidth ||
 
-        listaCanciones.innerHTML = "";
+                    canvas.height !==
+                    video.videoHeight
+                ) {
+
+                    prepararCanvas();
+
+                }
 
 
-        canciones.forEach(
-            function (
-                cancion,
-                indice
-            ) {
-
-                crearCancion(
-                    cancion,
-                    indice + 1
+                ctx.drawImage(
+                    video,
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
                 );
 
-            }
-        );
 
+                let frame =
+                    ctx.getImageData(
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+                    );
 
-    } catch (error) {
 
-        console.error(error);
-
-        mostrarMensaje(
-            "No se pudieron cargar las canciones."
-        );
-
-    }
-
-
-    /* =====================================================
-       CREAR TARJETA DE CANCIÓN
-       ===================================================== */
-
-    function crearCancion(
-        archivo,
-        numero
-    ) {
-
-        const tarjeta =
-            document.createElement("div");
-
-        tarjeta.className =
-            "cancion";
-
-
-        /* =================================================
-           NOMBRE
-           ================================================= */
-
-        const nombre =
-            document.createElement("div");
-
-        nombre.className =
-            "cancion-nombre";
-
-
-        const numeroElemento =
-            document.createElement("span");
-
-        numeroElemento.className =
-            "numero-cancion";
-
-        numeroElemento.textContent =
-            String(numero).padStart(2, "0");
-
-
-        const textoNombre =
-            document.createElement("span");
-
-        /*
-           CONSERVAMOS EL NOMBRE ORIGINAL
-           DEL MP3.
-        */
-
-        textoNombre.textContent =
-            archivo.name.replace(
-                /\.mp3$/i,
-                ""
-            );
-
-
-        nombre.appendChild(
-            numeroElemento
-        );
-
-        nombre.appendChild(
-            textoNombre
-        );
-
-
-        /* =================================================
-           AUDIO
-           ================================================= */
-
-        const audio =
-            document.createElement("audio");
-
-        audio.src =
-            archivo.download_url;
-
-        audio.preload =
-            "metadata";
-
-        audio.style.display =
-            "none";
-
-
-        /* =================================================
-           CONTROLES
-           ================================================= */
-
-        const controles =
-            document.createElement("div");
-
-        controles.className =
-            "controles";
-
-
-        /* PLAY */
-
-        const botonPlay =
-            document.createElement("button");
-
-        botonPlay.className =
-            "boton-play";
-
-        botonPlay.type =
-            "button";
-
-        botonPlay.textContent =
-            "▶";
-
-
-        /* BARRA */
-
-        const barraContenedor =
-            document.createElement("div");
-
-        barraContenedor.className =
-            "barra-contenedor";
-
-
-        const barra =
-            document.createElement("input");
-
-        barra.type =
-            "range";
-
-        barra.className =
-            "barra";
-
-        barra.min =
-            "0";
-
-        barra.max =
-            "100";
-
-        barra.value =
-            "0";
-
-        barra.step =
-            "0.1";
-
-
-        /* TIEMPOS */
-
-        const tiempos =
-            document.createElement("div");
-
-        tiempos.className =
-            "tiempos";
-
-
-        const tiempoActual =
-            document.createElement("span");
-
-        tiempoActual.textContent =
-            "0:00";
-
-
-        const tiempoTotal =
-            document.createElement("span");
-
-        tiempoTotal.textContent =
-            "0:00";
-
-
-        tiempos.appendChild(
-            tiempoActual
-        );
-
-        tiempos.appendChild(
-            tiempoTotal
-        );
-
-
-        barraContenedor.appendChild(
-            barra
-        );
-
-        barraContenedor.appendChild(
-            tiempos
-        );
-
-
-        /* VOLUMEN */
-
-        const volumen =
-            document.createElement("input");
-
-        volumen.type =
-            "range";
-
-        volumen.className =
-            "volumen";
-
-        volumen.min =
-            "0";
-
-        volumen.max =
-            "1";
-
-        volumen.step =
-            "0.01";
-
-        volumen.value =
-            "0.8";
-
-
-        /* ARMAR TARJETA */
-
-        controles.appendChild(
-            botonPlay
-        );
-
-        controles.appendChild(
-            barraContenedor
-        );
-
-        controles.appendChild(
-            volumen
-        );
-
-
-        tarjeta.appendChild(
-            nombre
-        );
-
-        tarjeta.appendChild(
-            controles
-        );
-
-        tarjeta.appendChild(
-            audio
-        );
-
-
-        listaCanciones.appendChild(
-            tarjeta
-        );
-
-
-        /* =================================================
-           PLAY / PAUSE
-           ================================================= */
-
-        botonPlay.addEventListener(
-            "click",
-            function () {
+                let datos =
+                    frame.data;
 
 
                 /*
-                   Detener todas las demás.
+                   Eliminamos los colores
+                   verde y azul del MP4.
+
+                   La portada queda encima
+                   del área correspondiente.
                 */
 
-                document
-                    .querySelectorAll(
-                        ".cancion audio"
-                    )
-                    .forEach(
-                        function (
-                            otroAudio
-                        ) {
-
-                            if (
-                                otroAudio !== audio
-                            ) {
-
-                                otroAudio.pause();
-
-                                otroAudio.currentTime =
-                                    0;
-
-                            }
-
-                        }
-                    );
-
-
-                document
-                    .querySelectorAll(
-                        ".cancion"
-                    )
-                    .forEach(
-                        function (
-                            otraTarjeta
-                        ) {
-
-                            otraTarjeta
-                                .classList
-                                .remove(
-                                    "reproduciendo"
-                                );
-
-                        }
-                    );
-
-
-                if (
-                    audio.paused
+                for (
+                    let i = 0;
+                    i < datos.length;
+                    i += 4
                 ) {
 
-                    audio.play();
+
+                    const r =
+                        datos[i];
+
+
+                    const g =
+                        datos[i + 1];
+
+
+                    const b =
+                        datos[i + 2];
+
+
+                    /* -------------------------------------
+                       VERDE
+                       ------------------------------------- */
+
+                    const verde =
+                        g > 130 &&
+                        g > r * 1.25 &&
+                        g > b * 1.20;
+
+
+                    /* -------------------------------------
+                       AZUL
+                       ------------------------------------- */
+
+                    const azul =
+                        b > 100 &&
+                        b > r * 1.20 &&
+                        b > g * 1.05;
+
+
+                    if (
+                        verde ||
+                        azul
+                    ) {
+
+                        datos[i + 3] =
+                            0;
+
+                    }
+
+                }
+
+
+                ctx.putImageData(
+                    frame,
+                    0,
+                    0
+                );
+
+
+                solicitarFrame();
+
+            }
+
+
+            function solicitarFrame() {
+
+                if (
+                    "requestVideoFrameCallback"
+                    in HTMLVideoElement.prototype
+                ) {
+
+                    video.requestVideoFrameCallback(
+                        function () {
+
+                            procesarFrame();
+
+                        }
+                    );
 
                 } else {
 
-                    audio.pause();
+                    requestAnimationFrame(
+                        procesarFrame
+                    );
 
                 }
 
             }
-        );
+
+
+            video.addEventListener(
+                "loadedmetadata",
+                function () {
+
+                    prepararCanvas();
+
+                }
+            );
+
+
+            video.addEventListener(
+                "canplay",
+                function () {
+
+                    prepararCanvas();
+
+
+                    video.play()
+                        .catch(
+                            function () {
+
+                                console.log(
+                                    "El video espera interacción."
+                                );
+
+                            }
+                        );
+
+
+                    solicitarFrame();
+
+                },
+                {
+                    once: true
+                }
+            );
+
+
+            video.play()
+                .then(
+                    function () {
+
+                        prepararCanvas();
+
+                        solicitarFrame();
+
+                    }
+                )
+                .catch(
+                    function () {
+
+                        console.log(
+                            "Autoplay bloqueado."
+                        );
+
+                    }
+                );
+
+        }
 
 
         /* =================================================
-           PLAY
+           GITHUB
            ================================================= */
 
-        audio.addEventListener(
-            "play",
-            function () {
+        const repositorio =
+            "homemusicfya-cloud/fa-5-aniversario-ar";
 
-                botonPlay.textContent =
-                    "❚❚";
 
-                tarjeta.classList.add(
-                    "reproduciendo"
+        const carpeta =
+            `experiencias/${nfc}`;
+
+
+        /* =================================================
+           BUSCAR MP3
+           ================================================= */
+
+        async function buscarMp3(
+            ruta
+        ) {
+
+            const url =
+                `https://api.github.com/repos/${repositorio}/contents/${ruta}`;
+
+
+            const respuesta =
+                await fetch(url);
+
+
+            if (!respuesta.ok) {
+
+                throw new Error(
+                    "No se pudo leer " + ruta
                 );
 
             }
-        );
 
 
-        /* =================================================
-           PAUSA
-           ================================================= */
-
-        audio.addEventListener(
-            "pause",
-            function () {
-
-                botonPlay.textContent =
-                    "▶";
-
-                tarjeta.classList.remove(
-                    "reproduciendo"
-                );
-
-            }
-        );
+            const elementos =
+                await respuesta.json();
 
 
-        /* =================================================
-           DURACIÓN
-           ================================================= */
-
-        audio.addEventListener(
-            "loadedmetadata",
-            function () {
-
-                tiempoTotal.textContent =
-                    formatearTiempo(
-                        audio.duration
-                    );
-
-            }
-        );
+            const lista =
+                Array.isArray(
+                    elementos
+                )
+                    ? elementos
+                    : [elementos];
 
 
-        /* =================================================
-           PROGRESO
-           ================================================= */
+            let canciones = [];
 
-        audio.addEventListener(
-            "timeupdate",
-            function () {
+
+            for (
+                const elemento of lista
+            ) {
+
+
+                /* -----------------------------------------
+                   MP3
+                   ----------------------------------------- */
 
                 if (
-                    !audio.duration ||
-                    isNaN(audio.duration)
+                    elemento.type === "file" &&
+
+                    elemento.name
+                        .toLowerCase()
+                        .endsWith(".mp3")
                 ) {
+
+                    canciones.push(
+                        elemento
+                    );
+
+                    continue;
+
+                }
+
+
+                /* -----------------------------------------
+                   CARPETA
+                   ----------------------------------------- */
+
+                if (
+                    elemento.type === "dir"
+                ) {
+
+                    try {
+
+                        const dentro =
+                            await buscarMp3(
+                                elemento.path
+                            );
+
+
+                        canciones =
+                            canciones.concat(
+                                dentro
+                            );
+
+                    } catch (
+                        error
+                    ) {
+
+                        console.warn(
+                            elemento.path,
+                            error
+                        );
+
+                    }
+
+                }
+
+            }
+
+
+            return canciones;
+
+        }
+
+
+        /* =================================================
+           CARGAR CANCIONES
+           ================================================= */
+
+        cargarCanciones();
+
+
+        async function cargarCanciones() {
+
+            try {
+
+
+                listaCanciones.innerHTML = `
+
+                    <div class="cargando">
+
+                        Cargando canciones...
+
+                    </div>
+
+                `;
+
+
+                let canciones =
+                    await buscarMp3(
+                        carpeta
+                    );
+
+
+                /* -----------------------------------------
+                   ORDENAR
+                   ----------------------------------------- */
+
+                canciones.sort(
+                    function (
+                        a,
+                        b
+                    ) {
+
+                        return a.name.localeCompare(
+                            b.name,
+                            undefined,
+                            {
+                                numeric: true,
+                                sensitivity: "base"
+                            }
+                        );
+
+                    }
+                );
+
+
+                if (
+                    canciones.length === 0
+                ) {
+
+                    listaCanciones.innerHTML = `
+
+                        <div class="cargando">
+
+                            No encontramos canciones
+                            para este NFC.
+
+                        </div>
+
+                    `;
 
                     return;
 
                 }
 
 
-                const porcentaje =
-                    (
-                        audio.currentTime /
-                        audio.duration
-                    ) * 100;
+                listaCanciones.innerHTML =
+                    "";
 
 
-                barra.value =
-                    porcentaje;
+                canciones.forEach(
+                    function (
+                        cancion,
+                        indice
+                    ) {
+
+                        crearCancion(
+                            cancion,
+                            indice
+                        );
+
+                    }
+                );
 
 
-                tiempoActual.textContent =
-                    formatearTiempo(
-                        audio.currentTime
+            } catch (
+                error
+            ) {
+
+                console.error(
+                    error
+                );
+
+
+                listaCanciones.innerHTML = `
+
+                    <div class="cargando">
+
+                        No se pudieron cargar
+                        las canciones.
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+        /* =================================================
+           CREAR CANCIÓN
+           ================================================= */
+
+        function crearCancion(
+            archivo,
+            indice
+        ) {
+
+
+            const tarjeta =
+                document.createElement(
+                    "div"
+                );
+
+
+            tarjeta.className =
+                "cancion";
+
+
+            /* ---------------------------------------------
+               NOMBRE
+               --------------------------------------------- */
+
+            const nombre =
+                document.createElement(
+                    "div"
+                );
+
+
+            nombre.className =
+                "cancion-nombre";
+
+
+            const numero =
+                document.createElement(
+                    "span"
+                );
+
+
+            numero.className =
+                "numero-cancion";
+
+
+            numero.textContent =
+                String(
+                    indice + 1
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+
+            const titulo =
+                document.createElement(
+                    "span"
+                );
+
+
+            titulo.textContent =
+                archivo.name.replace(
+                    /\.mp3$/i,
+                    ""
+                );
+
+
+            nombre.appendChild(
+                numero
+            );
+
+
+            nombre.appendChild(
+                titulo
+            );
+
+
+            /* ---------------------------------------------
+               AUDIO
+               --------------------------------------------- */
+
+            const audio =
+                document.createElement(
+                    "audio"
+                );
+
+
+            audio.src =
+                archivo.download_url;
+
+
+            audio.preload =
+                "metadata";
+
+
+            audio.volume =
+                0.8;
+
+
+            audio.style.display =
+                "none";
+
+
+            /* ---------------------------------------------
+               CONTROLES
+               --------------------------------------------- */
+
+            const controles =
+                document.createElement(
+                    "div"
+                );
+
+
+            controles.className =
+                "controles";
+
+
+            /* PLAY */
+
+            const boton =
+                document.createElement(
+                    "button"
+                );
+
+
+            boton.className =
+                "boton-play";
+
+
+            boton.type =
+                "button";
+
+
+            boton.textContent =
+                "▶";
+
+
+            /* BARRA */
+
+            const barraContenedor =
+                document.createElement(
+                    "div"
+                );
+
+
+            barraContenedor.className =
+                "barra-contenedor";
+
+
+            const barra =
+                document.createElement(
+                    "input"
+                );
+
+
+            barra.type =
+                "range";
+
+
+            barra.className =
+                "barra";
+
+
+            barra.min =
+                "0";
+
+
+            barra.max =
+                "100";
+
+
+            barra.value =
+                "0";
+
+
+            barra.step =
+                "0.1";
+
+
+            /* TIEMPOS */
+
+            const tiempos =
+                document.createElement(
+                    "div"
+                );
+
+
+            tiempos.className =
+                "tiempos";
+
+
+            const actual =
+                document.createElement(
+                    "span"
+                );
+
+
+            actual.textContent =
+                "0:00";
+
+
+            const total =
+                document.createElement(
+                    "span"
+                );
+
+
+            total.textContent =
+                "0:00";
+
+
+            tiempos.appendChild(
+                actual
+            );
+
+
+            tiempos.appendChild(
+                total
+            );
+
+
+            barraContenedor.appendChild(
+                barra
+            );
+
+
+            barraContenedor.appendChild(
+                tiempos
+            );
+
+
+            /* VOLUMEN */
+
+            const volumen =
+                document.createElement(
+                    "input"
+                );
+
+
+            volumen.type =
+                "range";
+
+
+            volumen.className =
+                "volumen";
+
+
+            volumen.min =
+                "0";
+
+
+            volumen.max =
+                "1";
+
+
+            volumen.step =
+                "0.01";
+
+
+            volumen.value =
+                "0.8";
+
+
+            /* ---------------------------------------------
+               ARMAR
+               --------------------------------------------- */
+
+            controles.appendChild(
+                boton
+            );
+
+
+            controles.appendChild(
+                barraContenedor
+            );
+
+
+            controles.appendChild(
+                volumen
+            );
+
+
+            tarjeta.appendChild(
+                nombre
+            );
+
+
+            tarjeta.appendChild(
+                controles
+            );
+
+
+            tarjeta.appendChild(
+                audio
+            );
+
+
+            listaCanciones.appendChild(
+                tarjeta
+            );
+
+
+            /* =================================================
+               PLAY
+               ================================================= */
+
+            boton.addEventListener(
+                "click",
+                function () {
+
+                    detenerOtras(
+                        audio
                     );
 
-            }
-        );
 
+                    if (
+                        audio.paused
+                    ) {
 
-        /* =================================================
-           BARRA DE PROGRESO
-           ================================================= */
+                        audio.play();
 
-        barra.addEventListener(
-            "input",
-            function () {
+                    } else {
 
-                if (
-                    !audio.duration ||
-                    isNaN(audio.duration)
-                ) {
+                        audio.pause();
 
-                    return;
+                    }
 
                 }
+            );
 
 
-                audio.currentTime =
-                    (
-                        barra.value / 100
-                    ) *
-                    audio.duration;
+            /* =================================================
+               PLAY
+               ================================================= */
 
-            }
-        );
+            audio.addEventListener(
+                "play",
+                function () {
+
+                    boton.textContent =
+                        "❚❚";
+
+
+                    tarjeta.classList.add(
+                        "reproduciendo"
+                    );
+
+                }
+            );
+
+
+            /* =================================================
+               PAUSA
+               ================================================= */
+
+            audio.addEventListener(
+                "pause",
+                function () {
+
+                    boton.textContent =
+                        "▶";
+
+
+                    tarjeta.classList.remove(
+                        "reproduciendo"
+                    );
+
+                }
+            );
+
+
+            /* =================================================
+               DURACIÓN
+               ================================================= */
+
+            audio.addEventListener(
+                "loadedmetadata",
+                function () {
+
+                    total.textContent =
+                        formatoTiempo(
+                            audio.duration
+                        );
+
+                }
+            );
+
+
+            /* =================================================
+               PROGRESO
+               ================================================= */
+
+            audio.addEventListener(
+                "timeupdate",
+                function () {
+
+                    if (
+                        !audio.duration ||
+                        isNaN(
+                            audio.duration
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    barra.value =
+                        (
+                            audio.currentTime /
+                            audio.duration
+                        ) * 100;
+
+
+                    actual.textContent =
+                        formatoTiempo(
+                            audio.currentTime
+                        );
+
+                }
+            );
+
+
+            /* =================================================
+               BARRA
+               ================================================= */
+
+            barra.addEventListener(
+                "input",
+                function () {
+
+                    if (
+                        !audio.duration
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    audio.currentTime =
+                        (
+                            barra.value /
+                            100
+                        ) *
+                        audio.duration;
+
+                }
+            );
+
+
+            /* =================================================
+               VOLUMEN
+               ================================================= */
+
+            volumen.addEventListener(
+                "input",
+                function () {
+
+                    audio.volume =
+                        volumen.value;
+
+                }
+            );
+
+
+            /* =================================================
+               TERMINÓ LA CANCIÓN
+               ================================================= */
+
+            audio.addEventListener(
+                "ended",
+                function () {
+
+                    boton.textContent =
+                        "▶";
+
+
+                    tarjeta.classList.remove(
+                        "reproduciendo"
+                    );
+
+
+                    barra.value =
+                        "0";
+
+
+                    reproducirSiguiente(
+                        tarjeta
+                    );
+
+                }
+            );
+
+        }
 
 
         /* =================================================
-           VOLUMEN
+           DETENER OTRAS CANCIONES
            ================================================= */
 
-        volumen.addEventListener(
-            "input",
-            function () {
+        function detenerOtras(
+            audioActual
+        ) {
 
-                audio.volume =
-                    volumen.value;
-
-            }
-        );
-
-
-        /* =================================================
-           TERMINÓ
-           ================================================= */
-audio.addEventListener(
-    "ended",
-    function () {
-
-        botonPlay.textContent = "▶";
-
-        tarjeta.classList.remove(
-            "reproduciendo"
-        );
-
-        barra.value = "0";
+            const audios =
+                document.querySelectorAll(
+                    ".cancion audio"
+                );
 
 
-        /* =================================================
-           REPRODUCCIÓN AUTOMÁTICA DEL ÁLBUM
-           ================================================= */
+            audios.forEach(
+                function (
+                    audio
+                ) {
 
-        const tarjetas =
-            Array.from(
-                listaCanciones.querySelectorAll(
+                    if (
+                        audio !==
+                        audioActual
+                    ) {
+
+                        audio.pause();
+
+                        audio.currentTime =
+                            0;
+
+                    }
+
+                }
+            );
+
+
+            document
+                .querySelectorAll(
                     ".cancion"
+                )
+                .forEach(
+                    function (
+                        tarjeta
+                    ) {
+
+                        tarjeta.classList.remove(
+                            "reproduciendo"
+                        );
+
+                    }
+                );
+
+        }
+
+
+        /* =================================================
+           SIGUIENTE CANCIÓN
+           ================================================= */
+
+        function reproducirSiguiente(
+            tarjetaActual
+        ) {
+
+            const tarjetas =
+                Array.from(
+                    document.querySelectorAll(
+                        ".cancion"
+                    )
+                );
+
+
+            if (
+                tarjetas.length === 0
+            ) {
+
+                return;
+
+            }
+
+
+            const posicion =
+                tarjetas.indexOf(
+                    tarjetaActual
+                );
+
+
+            if (
+                posicion === -1
+            ) {
+
+                return;
+
+            }
+
+
+            let siguiente =
+                posicion + 1;
+
+
+            /*
+               Si terminó la última,
+               regresamos a la primera.
+            */
+
+            if (
+                siguiente >=
+                tarjetas.length
+            ) {
+
+                siguiente = 0;
+
+            }
+
+
+            const siguienteTarjeta =
+                tarjetas[siguiente];
+
+
+            const siguienteAudio =
+                siguienteTarjeta.querySelector(
+                    "audio"
+                );
+
+
+            if (
+                !siguienteAudio
+            ) {
+
+                return;
+
+            }
+
+
+            detenerOtras(
+                siguienteAudio
+            );
+
+
+            siguienteAudio.currentTime =
+                0;
+
+
+            siguienteAudio.play()
+                .catch(
+                    function (
+                        error
+                    ) {
+
+                        console.warn(
+                            "No se pudo reproducir automáticamente:",
+                            error
+                        );
+
+                    }
+                );
+
+        }
+
+
+        /* =================================================
+           FORMATO DE TIEMPO
+           ================================================= */
+
+        function formatoTiempo(
+            segundos
+        ) {
+
+            if (
+                !segundos ||
+                isNaN(
+                    segundos
+                )
+            ) {
+
+                return "0:00";
+
+            }
+
+
+            const minutos =
+                Math.floor(
+                    segundos / 60
+                );
+
+
+            const segundosRestantes =
+                Math.floor(
+                    segundos % 60
+                );
+
+
+            return (
+                minutos +
+                ":" +
+                String(
+                    segundosRestantes
+                ).padStart(
+                    2,
+                    "0"
                 )
             );
 
-
-        const posicionActual =
-            tarjetas.indexOf(tarjeta);
-
-
-        if (posicionActual === -1) {
-            return;
         }
 
-
-        /*
-           Si hay una siguiente canción,
-           reproducirla.
-
-           Si terminó la última,
-           volver a la primera.
-        */
-
-        let siguientePosicion =
-            posicionActual + 1;
-
-
-        if (
-            siguientePosicion >=
-            tarjetas.length
-        ) {
-
-            siguientePosicion = 0;
-
-        }
-
-
-        const siguienteTarjeta =
-            tarjetas[siguientePosicion];
-
-
-        const siguienteAudio =
-            siguienteTarjeta.querySelector(
-                "audio"
-            );
-
-
-        const siguienteBoton =
-            siguienteTarjeta.querySelector(
-                ".boton-play"
-            );
-
-
-        if (
-            siguienteAudio &&
-            siguienteBoton
-        ) {
-
-            siguienteAudio.currentTime = 0;
-
-            siguienteAudio.play();
-
-        }
 
     }
 );
-        
-        
-
-    }
-
-
-    /* =====================================================
-       FORMATO DEL TIEMPO
-       ===================================================== */
-
-    function formatearTiempo(
-        segundos
-    ) {
-
-        if (
-            !segundos ||
-            isNaN(segundos)
-        ) {
-
-            return "0:00";
-
-        }
-
-
-        const minutos =
-            Math.floor(
-                segundos / 60
-            );
-
-
-        const segundosRestantes =
-            Math.floor(
-                segundos % 60
-            );
-
-
-        return (
-            minutos +
-            ":" +
-            String(
-                segundosRestantes
-            ).padStart(2, "0")
-        );
-
-    }
-
-
-    /* =====================================================
-       MENSAJE
-       ===================================================== */
-
-    function mostrarMensaje(
-        mensaje
-    ) {
-
-        listaCanciones.innerHTML = "";
-
-
-        const elemento =
-            document.createElement("div");
-
-        elemento.className =
-            "cargando";
-
-        elemento.textContent =
-            mensaje;
-
-
-        listaCanciones.appendChild(
-            elemento
-        );
-
-    }
-
-});
