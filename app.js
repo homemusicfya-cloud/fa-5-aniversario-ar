@@ -1,34 +1,20 @@
-document.addEventListener(
-    "DOMContentLoaded",
-    async function () {
-
+document.addEventListener("DOMContentLoaded", async function () {
 
     /* =====================================================
        ELEMENTOS
        ===================================================== */
 
     const pantallaInicio =
-        document.getElementById(
-            "pantallaInicio"
-        );
-
+        document.getElementById("pantallaInicio");
 
     const pantallaMusica =
-        document.getElementById(
-            "pantallaMusica"
-        );
-
+        document.getElementById("pantallaMusica");
 
     const listaCanciones =
-        document.getElementById(
-            "listaCanciones"
-        );
-
+        document.getElementById("listaCanciones");
 
     const numeroNfc =
-        document.getElementById(
-            "numeroNfc"
-        );
+        document.getElementById("numeroNfc");
 
 
     /* =====================================================
@@ -36,40 +22,25 @@ document.addEventListener(
        ===================================================== */
 
     const parametros =
-        new URLSearchParams(
-            window.location.search
-        );
+        new URLSearchParams(window.location.search);
 
-
-    let nfc =
-        parametros.get("nfc");
-
+    let nfc = parametros.get("nfc");
 
     if (!nfc) {
-
         nfc = "01";
-
     }
 
+    nfc = String(parseInt(nfc, 10)).padStart(2, "0");
 
-    nfc =
-        String(
-            parseInt(nfc, 10)
-        ).padStart(2, "0");
-
-
-    numeroNfc.textContent =
-        "NFC " + nfc;
+    numeroNfc.textContent = "NFC " + nfc;
 
 
     /* =====================================================
-       TRANSICIÓN POR DESLIZAMIENTO
+       DESLIZAMIENTO HACIA ARRIBA
        ===================================================== */
 
     let inicioTouchY = 0;
-
     let movimientoTouchY = 0;
-
     let tocando = false;
 
 
@@ -77,27 +48,20 @@ document.addEventListener(
         "touchstart",
         function (event) {
 
-            if (
-                event.touches.length !== 1
-            ) {
+            if (event.touches.length !== 1) {
                 return;
             }
-
 
             inicioTouchY =
                 event.touches[0].clientY;
 
-
             movimientoTouchY =
                 inicioTouchY;
-
 
             tocando = true;
 
         },
-        {
-            passive: true
-        }
+        { passive: true }
     );
 
 
@@ -109,14 +73,11 @@ document.addEventListener(
                 return;
             }
 
-
             movimientoTouchY =
                 event.touches[0].clientY;
 
         },
-        {
-            passive: true
-        }
+        { passive: true }
     );
 
 
@@ -128,108 +89,41 @@ document.addEventListener(
                 return;
             }
 
-
             tocando = false;
 
-
             const distancia =
-                inicioTouchY -
-                movimientoTouchY;
-
+                inicioTouchY - movimientoTouchY;
 
             if (distancia > 40) {
-
                 mostrarMusica();
-
             }
 
         },
-        {
-            passive: true
-        }
-    );
-
-
-    pantallaInicio.addEventListener(
-        "touchcancel",
-        function () {
-
-            tocando = false;
-
-        },
-        {
-            passive: true
-        }
+        { passive: true }
     );
 
 
     /* =====================================================
-       TRANSICIÓN A MÚSICA
+       MOSTRAR REPRODUCTOR
        ===================================================== */
 
     function mostrarMusica() {
 
-
         if (
-            pantallaMusica.classList
-                .contains("visible")
+            pantallaMusica.classList.contains("visible")
         ) {
-
             return;
-
         }
 
+        pantallaInicio.classList.add("salida");
 
-        pantallaInicio.classList.add(
-            "salida"
-        );
+        pantallaMusica.classList.add("visible");
 
+        setTimeout(function () {
 
-        pantallaMusica.classList.add(
-            "visible"
-        );
+            pantallaInicio.style.display = "none";
 
-
-        setTimeout(
-            function () {
-
-                pantallaInicio.style.display =
-                    "none";
-
-            },
-            900
-        );
-
-    }
-
-
-    /* =====================================================
-       REGRESAR A PORTADA
-       ===================================================== */
-
-    function mostrarInicio() {
-
-
-        pantallaInicio.style.display =
-            "flex";
-
-
-        pantallaMusica.classList.remove(
-            "visible"
-        );
-
-
-        setTimeout(
-            function () {
-
-                pantallaInicio.classList.remove(
-                    "salida"
-                );
-
-            },
-            20
-        );
-
+        }, 900);
     }
 
 
@@ -238,10 +132,7 @@ document.addEventListener(
        ===================================================== */
 
     const botonDesliza =
-        document.querySelector(
-            ".desliza"
-        );
-
+        document.querySelector(".desliza");
 
     if (botonDesliza) {
 
@@ -254,59 +145,168 @@ document.addEventListener(
 
 
     /* =====================================================
-       GITHUB
+       CONFIGURACIÓN GITHUB
        ===================================================== */
 
     const repositorio =
         "homemusicfya-cloud/fa-5-aniversario-ar";
 
+    /*
+       IMPORTANTE:
 
-    const ruta =
-        `experiencias/${nfc}/canciones`;
+       NFC 01 -> experiencias/01
+       NFC 02 -> experiencias/02
+       NFC 03 -> experiencias/03
+       NFC 04 -> experiencias/04
+       etc.
+    */
+
+    const carpetaNfc =
+        `experiencias/${nfc}`;
 
 
-    const apiURL =
-        `https://api.github.com/repos/${repositorio}/contents/${ruta}`;
+    /* =====================================================
+       BUSCAR TODOS LOS MP3
+       ===================================================== */
 
+    async function buscarMp3(
+        ruta
+    ) {
 
-    try {
-
+        const apiURL =
+            `https://api.github.com/repos/${repositorio}/contents/${ruta}`;
 
         const respuesta =
             await fetch(apiURL);
 
-
         if (!respuesta.ok) {
 
             throw new Error(
-                "No se pudieron obtener las canciones."
+                `No se pudo acceder a: ${ruta}`
             );
 
         }
-
 
         const archivos =
             await respuesta.json();
 
 
-        /* SOLO MP3 */
+        /*
+           Si GitHub devuelve un solo archivo
+           lo convertimos en arreglo.
+        */
 
-        const canciones =
-            archivos.filter(
-                function (archivo) {
+        const lista =
+            Array.isArray(archivos)
+                ? archivos
+                : [archivos];
 
-                    return (
-                        archivo.type === "file" &&
-                        archivo.name
-                            .toLowerCase()
-                            .endsWith(".mp3")
+
+        let canciones = [];
+
+
+        for (
+            const archivo of lista
+        ) {
+
+
+            /* ---------------------------------------------
+               SI ES MP3
+               --------------------------------------------- */
+
+            if (
+                archivo.type === "file" &&
+                archivo.name
+                    .toLowerCase()
+                    .endsWith(".mp3")
+            ) {
+
+                canciones.push(archivo);
+
+                continue;
+
+            }
+
+
+            /* ---------------------------------------------
+               SI ES CARPETA
+               BUSCAR DENTRO
+               --------------------------------------------- */
+
+            if (
+                archivo.type === "dir"
+            ) {
+
+                try {
+
+                    const cancionesDentro =
+                        await buscarMp3(
+                            archivo.path
+                        );
+
+                    canciones =
+                        canciones.concat(
+                            cancionesDentro
+                        );
+
+                } catch (error) {
+
+                    console.warn(
+                        "No se pudo leer:",
+                        archivo.path
                     );
 
                 }
+
+            }
+
+        }
+
+
+        return canciones;
+
+    }
+
+
+    /* =====================================================
+       CARGAR CANCIONES DEL NFC
+       ===================================================== */
+
+    try {
+
+        listaCanciones.innerHTML = `
+            <div class="cargando">
+                <div class="spinner"></div>
+                <span>
+                    Cargando canciones...
+                </span>
+            </div>
+        `;
+
+
+        /*
+           AQUÍ está el cambio importante:
+
+           Ya NO buscamos solamente:
+
+           experiencias/02/canciones
+
+           Ahora buscamos TODO dentro de:
+
+           experiencias/02
+
+           incluyendo subcarpetas.
+        */
+
+        let canciones =
+            await buscarMp3(
+                carpetaNfc
             );
 
 
-        /* ORDEN */
+        /* =================================================
+           ORDENAR CANCIONES
+           ================================================= */
 
         canciones.sort(
             function (a, b) {
@@ -324,12 +324,16 @@ document.addEventListener(
         );
 
 
+        /* =================================================
+           NO HAY CANCIONES
+           ================================================= */
+
         if (
             canciones.length === 0
         ) {
 
             mostrarMensaje(
-                "Todavía no hay canciones en este NFC."
+                `No encontramos canciones en NFC ${nfc}.`
             );
 
             return;
@@ -337,8 +341,11 @@ document.addEventListener(
         }
 
 
-        listaCanciones.innerHTML =
-            "";
+        /* =================================================
+           MOSTRAR CANCIONES
+           ================================================= */
+
+        listaCanciones.innerHTML = "";
 
 
         canciones.forEach(
@@ -358,9 +365,7 @@ document.addEventListener(
 
     } catch (error) {
 
-
         console.error(error);
-
 
         mostrarMensaje(
             "No se pudieron cargar las canciones."
@@ -370,7 +375,7 @@ document.addEventListener(
 
 
     /* =====================================================
-       CREAR CANCIÓN
+       CREAR TARJETA DE CANCIÓN
        ===================================================== */
 
     function crearCancion(
@@ -378,12 +383,8 @@ document.addEventListener(
         numero
     ) {
 
-
         const tarjeta =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         tarjeta.className =
             "cancion";
@@ -394,35 +395,29 @@ document.addEventListener(
            ================================================= */
 
         const nombre =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         nombre.className =
             "cancion-nombre";
 
 
         const numeroElemento =
-            document.createElement(
-                "span"
-            );
-
+            document.createElement("span");
 
         numeroElemento.className =
             "numero-cancion";
 
-
         numeroElemento.textContent =
-            String(numero)
-                .padStart(2, "0");
+            String(numero).padStart(2, "0");
 
 
         const textoNombre =
-            document.createElement(
-                "span"
-            );
+            document.createElement("span");
 
+        /*
+           CONSERVAMOS EL NOMBRE ORIGINAL
+           DEL MP3.
+        */
 
         textoNombre.textContent =
             archivo.name.replace(
@@ -435,7 +430,6 @@ document.addEventListener(
             numeroElemento
         );
 
-
         nombre.appendChild(
             textoNombre
         );
@@ -446,18 +440,13 @@ document.addEventListener(
            ================================================= */
 
         const audio =
-            document.createElement(
-                "audio"
-            );
-
+            document.createElement("audio");
 
         audio.src =
             archivo.download_url;
 
-
         audio.preload =
             "metadata";
-
 
         audio.style.display =
             "none";
@@ -468,10 +457,7 @@ document.addEventListener(
            ================================================= */
 
         const controles =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         controles.className =
             "controles";
@@ -480,18 +466,13 @@ document.addEventListener(
         /* PLAY */
 
         const botonPlay =
-            document.createElement(
-                "button"
-            );
-
+            document.createElement("button");
 
         botonPlay.className =
             "boton-play";
 
-
         botonPlay.type =
             "button";
-
 
         botonPlay.textContent =
             "▶";
@@ -500,40 +481,29 @@ document.addEventListener(
         /* BARRA */
 
         const barraContenedor =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         barraContenedor.className =
             "barra-contenedor";
 
 
         const barra =
-            document.createElement(
-                "input"
-            );
-
+            document.createElement("input");
 
         barra.type =
             "range";
 
-
         barra.className =
             "barra";
-
 
         barra.min =
             "0";
 
-
         barra.max =
             "100";
 
-
         barra.value =
             "0";
-
 
         barra.step =
             "0.1";
@@ -542,30 +512,21 @@ document.addEventListener(
         /* TIEMPOS */
 
         const tiempos =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         tiempos.className =
             "tiempos";
 
 
         const tiempoActual =
-            document.createElement(
-                "span"
-            );
-
+            document.createElement("span");
 
         tiempoActual.textContent =
             "0:00";
 
 
         const tiempoTotal =
-            document.createElement(
-                "span"
-            );
-
+            document.createElement("span");
 
         tiempoTotal.textContent =
             "0:00";
@@ -574,7 +535,6 @@ document.addEventListener(
         tiempos.appendChild(
             tiempoActual
         );
-
 
         tiempos.appendChild(
             tiempoTotal
@@ -585,7 +545,6 @@ document.addEventListener(
             barra
         );
 
-
         barraContenedor.appendChild(
             tiempos
         );
@@ -594,46 +553,36 @@ document.addEventListener(
         /* VOLUMEN */
 
         const volumen =
-            document.createElement(
-                "input"
-            );
-
+            document.createElement("input");
 
         volumen.type =
             "range";
 
-
         volumen.className =
             "volumen";
-
 
         volumen.min =
             "0";
 
-
         volumen.max =
             "1";
 
-
         volumen.step =
             "0.01";
-
 
         volumen.value =
             "0.8";
 
 
-        /* ARMAR */
+        /* ARMAR TARJETA */
 
         controles.appendChild(
             botonPlay
         );
 
-
         controles.appendChild(
             barraContenedor
         );
-
 
         controles.appendChild(
             volumen
@@ -644,11 +593,9 @@ document.addEventListener(
             nombre
         );
 
-
         tarjeta.appendChild(
             controles
         );
-
 
         tarjeta.appendChild(
             audio
@@ -670,8 +617,8 @@ document.addEventListener(
 
 
                 /*
-                 * Detener las demás canciones.
-                 */
+                   Detener todas las demás.
+                */
 
                 document
                     .querySelectorAll(
@@ -683,8 +630,7 @@ document.addEventListener(
                         ) {
 
                             if (
-                                otroAudio !==
-                                audio
+                                otroAudio !== audio
                             ) {
 
                                 otroAudio.pause();
@@ -744,7 +690,6 @@ document.addEventListener(
                 botonPlay.textContent =
                     "❚❚";
 
-
                 tarjeta.classList.add(
                     "reproduciendo"
                 );
@@ -763,7 +708,6 @@ document.addEventListener(
 
                 botonPlay.textContent =
                     "▶";
-
 
                 tarjeta.classList.remove(
                     "reproduciendo"
@@ -798,7 +742,6 @@ document.addEventListener(
             "timeupdate",
             function () {
 
-
                 if (
                     !audio.duration ||
                     isNaN(audio.duration)
@@ -830,13 +773,12 @@ document.addEventListener(
 
 
         /* =================================================
-           BARRA
+           BARRA DE PROGRESO
            ================================================= */
 
         barra.addEventListener(
             "input",
             function () {
-
 
                 if (
                     !audio.duration ||
@@ -884,11 +826,9 @@ document.addEventListener(
                 botonPlay.textContent =
                     "▶";
 
-
                 tarjeta.classList.remove(
                     "reproduciendo"
                 );
-
 
                 barra.value =
                     "0";
@@ -900,13 +840,12 @@ document.addEventListener(
 
 
     /* =====================================================
-       FORMATEAR TIEMPO
+       FORMATO DEL TIEMPO
        ===================================================== */
 
     function formatearTiempo(
         segundos
     ) {
-
 
         if (
             !segundos ||
@@ -949,20 +888,14 @@ document.addEventListener(
         mensaje
     ) {
 
-
-        listaCanciones.innerHTML =
-            "";
+        listaCanciones.innerHTML = "";
 
 
         const elemento =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         elemento.className =
             "cargando";
-
 
         elemento.textContent =
             mensaje;
@@ -973,6 +906,5 @@ document.addEventListener(
         );
 
     }
-
 
 });
