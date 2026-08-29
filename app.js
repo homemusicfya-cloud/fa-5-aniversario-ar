@@ -189,7 +189,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     const carpetaNfc =
         `experiencias/${nfc}`;
 
-
+console.log("=================================");
+console.log("NFC DE LA URL:", parametros.get("nfc"));
+console.log("NFC PROCESADO:", nfc);
+console.log("CARPETA NFC:", carpetaNfc);
+console.log("=================================");
+    
     /* =====================================================
        BUSCAR MP3
        ===================================================== */
